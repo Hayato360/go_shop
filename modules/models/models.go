@@ -26,4 +26,6 @@ type (
 	KafkaOffset struct {
 		Offset int64 `json:"offset" bson:"offset"`
 	}
+
+	//51
 )
