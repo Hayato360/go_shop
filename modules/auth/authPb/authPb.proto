@@ -1,0 +1,28 @@
+syntax = "proto3" ;
+
+option go_package = "github.com/Hayato360/go_shop" ;
+
+message Empty {} 
+
+message CredentialReq {
+    string accessToken = 1 ;
+} 
+
+message CredentialRes {
+    bool isValid = 1 ;
+}
+
+message RolesCountReq {}
+
+message RolesCountRes {
+    int64 count = 1 ;
+}
+
+//  Methods
+
+
+service AuthGrpcService {
+    rpc CredentialSearch(CredentialReq) returns (CredentialRes);
+    rpc RolesCount(RolesCountReq) returns (RolesCountRes);
+}
+
