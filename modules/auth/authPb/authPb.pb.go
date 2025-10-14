@@ -57,27 +57,27 @@ func (*Empty) Descriptor() ([]byte, []int) {
 	return file_modules_auth_authPb_authPb_proto_rawDescGZIP(), []int{0}
 }
 
-type CredentialReq struct {
+type CredentialSearchReq struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	AccessToken   string                 `protobuf:"bytes,1,opt,name=accessToken,proto3" json:"accessToken,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *CredentialReq) Reset() {
-	*x = CredentialReq{}
+func (x *CredentialSearchReq) Reset() {
+	*x = CredentialSearchReq{}
 	mi := &file_modules_auth_authPb_authPb_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *CredentialReq) String() string {
+func (x *CredentialSearchReq) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*CredentialReq) ProtoMessage() {}
+func (*CredentialSearchReq) ProtoMessage() {}
 
-func (x *CredentialReq) ProtoReflect() protoreflect.Message {
+func (x *CredentialSearchReq) ProtoReflect() protoreflect.Message {
 	mi := &file_modules_auth_authPb_authPb_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -89,39 +89,39 @@ func (x *CredentialReq) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use CredentialReq.ProtoReflect.Descriptor instead.
-func (*CredentialReq) Descriptor() ([]byte, []int) {
+// Deprecated: Use CredentialSearchReq.ProtoReflect.Descriptor instead.
+func (*CredentialSearchReq) Descriptor() ([]byte, []int) {
 	return file_modules_auth_authPb_authPb_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *CredentialReq) GetAccessToken() string {
+func (x *CredentialSearchReq) GetAccessToken() string {
 	if x != nil {
 		return x.AccessToken
 	}
 	return ""
 }
 
-type CredentialRes struct {
+type CredentialSearchRes struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	IsValid       bool                   `protobuf:"varint,1,opt,name=isValid,proto3" json:"isValid,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *CredentialRes) Reset() {
-	*x = CredentialRes{}
+func (x *CredentialSearchRes) Reset() {
+	*x = CredentialSearchRes{}
 	mi := &file_modules_auth_authPb_authPb_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *CredentialRes) String() string {
+func (x *CredentialSearchRes) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*CredentialRes) ProtoMessage() {}
+func (*CredentialSearchRes) ProtoMessage() {}
 
-func (x *CredentialRes) ProtoReflect() protoreflect.Message {
+func (x *CredentialSearchRes) ProtoReflect() protoreflect.Message {
 	mi := &file_modules_auth_authPb_authPb_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -133,12 +133,12 @@ func (x *CredentialRes) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use CredentialRes.ProtoReflect.Descriptor instead.
-func (*CredentialRes) Descriptor() ([]byte, []int) {
+// Deprecated: Use CredentialSearchRes.ProtoReflect.Descriptor instead.
+func (*CredentialSearchRes) Descriptor() ([]byte, []int) {
 	return file_modules_auth_authPb_authPb_proto_rawDescGZIP(), []int{2}
 }
 
-func (x *CredentialRes) GetIsValid() bool {
+func (x *CredentialSearchRes) GetIsValid() bool {
 	if x != nil {
 		return x.IsValid
 	}
@@ -230,16 +230,16 @@ var File_modules_auth_authPb_authPb_proto protoreflect.FileDescriptor
 const file_modules_auth_authPb_authPb_proto_rawDesc = "" +
 	"\n" +
 	" modules/auth/authPb/authPb.proto\"\a\n" +
-	"\x05Empty\"1\n" +
-	"\rCredentialReq\x12 \n" +
-	"\vaccessToken\x18\x01 \x01(\tR\vaccessToken\")\n" +
-	"\rCredentialRes\x12\x18\n" +
+	"\x05Empty\"7\n" +
+	"\x13CredentialSearchReq\x12 \n" +
+	"\vaccessToken\x18\x01 \x01(\tR\vaccessToken\"/\n" +
+	"\x13CredentialSearchRes\x12\x18\n" +
 	"\aisValid\x18\x01 \x01(\bR\aisValid\"\x0f\n" +
 	"\rRolesCountReq\"%\n" +
 	"\rRolesCountRes\x12\x14\n" +
-	"\x05count\x18\x01 \x01(\x03R\x05count2s\n" +
-	"\x0fAuthGrpcService\x122\n" +
-	"\x10CredentialSearch\x12\x0e.CredentialReq\x1a\x0e.CredentialRes\x12,\n" +
+	"\x05count\x18\x01 \x01(\x03R\x05count2\x7f\n" +
+	"\x0fAuthGrpcService\x12>\n" +
+	"\x10CredentialSearch\x12\x14.CredentialSearchReq\x1a\x14.CredentialSearchRes\x12,\n" +
 	"\n" +
 	"RolesCount\x12\x0e.RolesCountReq\x1a\x0e.RolesCountResB\x1eZ\x1cgithub.com/Hayato360/go_shopb\x06proto3"
 
@@ -257,16 +257,16 @@ func file_modules_auth_authPb_authPb_proto_rawDescGZIP() []byte {
 
 var file_modules_auth_authPb_authPb_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
 var file_modules_auth_authPb_authPb_proto_goTypes = []any{
-	(*Empty)(nil),         // 0: Empty
-	(*CredentialReq)(nil), // 1: CredentialReq
-	(*CredentialRes)(nil), // 2: CredentialRes
-	(*RolesCountReq)(nil), // 3: RolesCountReq
-	(*RolesCountRes)(nil), // 4: RolesCountRes
+	(*Empty)(nil),               // 0: Empty
+	(*CredentialSearchReq)(nil), // 1: CredentialSearchReq
+	(*CredentialSearchRes)(nil), // 2: CredentialSearchRes
+	(*RolesCountReq)(nil),       // 3: RolesCountReq
+	(*RolesCountRes)(nil),       // 4: RolesCountRes
 }
 var file_modules_auth_authPb_authPb_proto_depIdxs = []int32{
-	1, // 0: AuthGrpcService.CredentialSearch:input_type -> CredentialReq
+	1, // 0: AuthGrpcService.CredentialSearch:input_type -> CredentialSearchReq
 	3, // 1: AuthGrpcService.RolesCount:input_type -> RolesCountReq
-	2, // 2: AuthGrpcService.CredentialSearch:output_type -> CredentialRes
+	2, // 2: AuthGrpcService.CredentialSearch:output_type -> CredentialSearchRes
 	4, // 3: AuthGrpcService.RolesCount:output_type -> RolesCountRes
 	2, // [2:4] is the sub-list for method output_type
 	0, // [0:2] is the sub-list for method input_type

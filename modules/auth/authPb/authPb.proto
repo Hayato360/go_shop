@@ -4,11 +4,11 @@ option go_package = "github.com/Hayato360/go_shop" ;
 
 message Empty {} 
 
-message CredentialReq {
+message CredentialSearchReq {
     string accessToken = 1 ;
 } 
 
-message CredentialRes {
+message CredentialSearchRes {
     bool isValid = 1 ;
 }
 
@@ -22,7 +22,7 @@ message RolesCountRes {
 
 
 service AuthGrpcService {
-    rpc CredentialSearch(CredentialReq) returns (CredentialRes);
+    rpc CredentialSearch(CredentialSearchReq) returns (CredentialSearchRes);
     rpc RolesCount(RolesCountReq) returns (RolesCountRes);
 }
 

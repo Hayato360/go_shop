@@ -27,7 +27,7 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type AuthGrpcServiceClient interface {
-	CredentialSearch(ctx context.Context, in *CredentialReq, opts ...grpc.CallOption) (*CredentialRes, error)
+	CredentialSearch(ctx context.Context, in *CredentialSearchReq, opts ...grpc.CallOption) (*CredentialSearchRes, error)
 	RolesCount(ctx context.Context, in *RolesCountReq, opts ...grpc.CallOption) (*RolesCountRes, error)
 }
 
@@ -39,9 +39,9 @@ func NewAuthGrpcServiceClient(cc grpc.ClientConnInterface) AuthGrpcServiceClient
 	return &authGrpcServiceClient{cc}
 }
 
-func (c *authGrpcServiceClient) CredentialSearch(ctx context.Context, in *CredentialReq, opts ...grpc.CallOption) (*CredentialRes, error) {
+func (c *authGrpcServiceClient) CredentialSearch(ctx context.Context, in *CredentialSearchReq, opts ...grpc.CallOption) (*CredentialSearchRes, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(CredentialRes)
+	out := new(CredentialSearchRes)
 	err := c.cc.Invoke(ctx, AuthGrpcService_CredentialSearch_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -63,7 +63,7 @@ func (c *authGrpcServiceClient) RolesCount(ctx context.Context, in *RolesCountRe
 // All implementations must embed UnimplementedAuthGrpcServiceServer
 // for forward compatibility.
 type AuthGrpcServiceServer interface {
-	CredentialSearch(context.Context, *CredentialReq) (*CredentialRes, error)
+	CredentialSearch(context.Context, *CredentialSearchReq) (*CredentialSearchRes, error)
 	RolesCount(context.Context, *RolesCountReq) (*RolesCountRes, error)
 	mustEmbedUnimplementedAuthGrpcServiceServer()
 }
@@ -75,7 +75,7 @@ type AuthGrpcServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedAuthGrpcServiceServer struct{}
 
-func (UnimplementedAuthGrpcServiceServer) CredentialSearch(context.Context, *CredentialReq) (*CredentialRes, error) {
+func (UnimplementedAuthGrpcServiceServer) CredentialSearch(context.Context, *CredentialSearchReq) (*CredentialSearchRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CredentialSearch not implemented")
 }
 func (UnimplementedAuthGrpcServiceServer) RolesCount(context.Context, *RolesCountReq) (*RolesCountRes, error) {
@@ -103,7 +103,7 @@ func RegisterAuthGrpcServiceServer(s grpc.ServiceRegistrar, srv AuthGrpcServiceS
 }
 
 func _AuthGrpcService_CredentialSearch_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CredentialReq)
+	in := new(CredentialSearchReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -115,7 +115,7 @@ func _AuthGrpcService_CredentialSearch_Handler(srv interface{}, ctx context.Cont
 		FullMethod: AuthGrpcService_CredentialSearch_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AuthGrpcServiceServer).CredentialSearch(ctx, req.(*CredentialReq))
+		return srv.(AuthGrpcServiceServer).CredentialSearch(ctx, req.(*CredentialSearchReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }

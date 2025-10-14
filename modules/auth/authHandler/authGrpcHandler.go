@@ -17,7 +17,7 @@ func NewAuthGrpcHandler(authUsecase authusecase.AuthUsecaseService) *authGrpcHan
 	return &authGrpcHandler{authUsecase: authUsecase}
 }
 
-func (g *authGrpcHandler) CredentialSearch (ctx *context.Context,req *authPb.CredentialReq) (*authPb.CredentialRes, error) {
+func (g *authGrpcHandler) CredentialSearch (ctx *context.Context,req *authPb.CredentialSearchReq) (*authPb.CredentialSearchRes, error) {
 	return nil , nil
 }
 
