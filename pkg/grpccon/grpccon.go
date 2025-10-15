@@ -1,14 +1,11 @@
 package grpccon
 
 import (
-	"context"
 	"errors"
-	"fmt"
 	"log"
 	"net"
 
 	"github.com/Hayato360/go_shop/config"
-	"github.com/Hayato360/go_shop/modules/auth"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 

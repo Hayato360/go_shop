@@ -12,6 +12,7 @@ import (
 type (
 	itemGrpcHandler struct {
 		itemUsecase itemusecase.ItemUsecaseService
+		itemPb.UnimplementedItemGrpcServiceServer
 	}
 )
 
