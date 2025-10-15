@@ -1,6 +1,13 @@
 package itemhandler
 
-import "github.com/Hayato360/go_shop/modules/item/itemUsecase"
+import (
+	"context"
+
+	"github.com/Hayato360/go_shop/modules/item/itemUsecase"
+	itemPb "github.com/Hayato360/go_shop/modules/item/itemPb"
+
+	
+)
 
 type (
 	itemGrpcHandler struct {
@@ -12,4 +19,8 @@ func NewItemGrpcHandler(itemUsecase itemusecase.ItemUsecaseService) *itemGrpcHan
 	return &itemGrpcHandler{
 		itemUsecase: itemUsecase,
 	}
+}
+
+func(g *itemGrpcHandler) FindItemsInIds(ctx context.Context, req *itemPb.FindItemsInIdsReq) (*itemPb.FindItemsInIdsRes, error){
+	return nil , nil
 }
