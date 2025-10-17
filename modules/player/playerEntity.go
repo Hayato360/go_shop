@@ -8,13 +8,13 @@ import (
 
 type (
 	Player struct {
-		Id primitive.ObjectID `json:"_id" bson:"_id,omitempty"`
-		Email string `json:"email" bson:"email"`
-		Password string `json:"password" bson:"password"`
-		Username string `json:"username" bson:"username"`
-		CreatedAt time.Time `json:"created_at" bson:"created_at"`
-		UpdatedAt time.Time `json:"updated_at" bson:"updated_at"`
-		PlayerRole []PlayerRole `bson:"player_roles"`
+		Id         primitive.ObjectID `json:"_id" bson:"_id,omitempty"`
+		Email      string             `json:"email" bson:"email"`
+		Password   string             `json:"password" bson:"password"`
+		Username   string             `json:"username" bson:"username"`
+		CreatedAt  time.Time          `json:"created_at" bson:"created_at"`
+		UpdatedAt  time.Time          `json:"updated_at" bson:"updated_at"`
+		PlayerRole []PlayerRole       `bson:"player_roles"`
 	}
 
 	PlayerRole struct {
@@ -23,13 +23,12 @@ type (
 	}
 
 	PlayerProfileBson struct {
-		Id 	 primitive.ObjectID `json:"_id" bson:"_id,omitempty"`
-		Email	string             `json:"email" bson:"email"`
-		Username string            `json:"username" bson:"username"`
-		CreatedAt time.Time       `json:"created_at" bson:"created_at"`
-		UpdatedAt time.Time       `json:"updated_at" bson:"updated_at"`
+		Id        primitive.ObjectID `json:"_id" bson:"_id,omitempty"`
+		Email     string             `json:"email" bson:"email"`
+		Username  string             `json:"username" bson:"username"`
+		CreatedAt time.Time          `json:"created_at" bson:"created_at"`
+		UpdatedAt time.Time          `json:"updated_at" bson:"updated_at"`
 	}
-
 
 	PlayerSavingAccount struct {
 		PlayerId string  `json:"player_id" bson:"player_id"`
@@ -37,8 +36,8 @@ type (
 	}
 
 	PlayerTransaction struct {
-		PlayerId string `bson:"player_id"`
-		Amount int64 `bson:"amount"`
+		PlayerId  string    `bson:"player_id"`
+		Amount    int64     `bson:"amount"`
 		CreatedAt time.Time `bson:"created_at"`
 	}
 )
