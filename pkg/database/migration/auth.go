@@ -1,6 +1,6 @@
 package migration
 
-import (
+import ( 
 	"context"
 	"log"
 
@@ -43,7 +43,7 @@ func AuthMigrate(pctx context.Context, cfg *config.Config) {
 	documents := func() []any {
 		roles := []*auth.Role{
 			{
-				Title: "user",
+				Title: "player",
 				Code: 0,
 			},
 			{
