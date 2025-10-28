@@ -1,9 +1,19 @@
 package playerusecase
 
-import "github.com/Hayato360/go_shop/modules/player/playerRepository"
+import (
+	"context"
+	"errors"
+
+	"github.com/Hayato360/go_shop/modules/player"
+	playerrepository "github.com/Hayato360/go_shop/modules/player/playerRepository"
+	"github.com/Hayato360/go_shop/pkg/utils"
+	"golang.org/x/crypto/bcrypt"
+)
 
 type (
-	PlayerUsecaseService interface{}
+	PlayerUsecaseService interface {
+		CreatePlayer(pctx context.Context, req *player.CreatePlayerReq) (string, error)
+	}
 
 	playerUsecase struct {
 		playerRepository playerrepository.PlayerRepositoryService
@@ -14,3 +24,32 @@ func NewPlayerUsecase(playerRepository playerrepository.PlayerRepositoryService)
 	return &playerUsecase{playerRepository: playerRepository}
 }
 
+func (u *playerUsecase) CreatePlayer(pctx context.Context, req *player.CreatePlayerReq) (string, error) {
+	if !u.playerRepository.IsUniquePlayer(pctx, req.Email, req.Username) {
+		return "", errors.New("error: email or username already exist")
+	}
+
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
+	if err != nil {
+		return "", errors.New("error: failed to hash password")
+	}
+
+	playerId, err := u.playerRepository.InsertOnePlayer(pctx, &player.Player{
+		Email:     req.Email,
+		Password:  string(hashedPassword),
+		Username:  req.Username,
+		CreatedAt: utils.LocalTime(),
+		UpdatedAt: utils.LocalTime(),
+		PlayerRole: []player.PlayerRole{
+			{
+				RoleTitle: "Player",
+				RoleCode:  0,
+			},
+		},
+	})
+	if err != nil {
+		return "", err
+	}
+
+	return playerId.Hex(), nil
+}

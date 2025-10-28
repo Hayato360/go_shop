@@ -14,7 +14,7 @@ type (
 		Username   string             `json:"username" bson:"username"`
 		CreatedAt  time.Time          `json:"created_at" bson:"created_at"`
 		UpdatedAt  time.Time          `json:"updated_at" bson:"updated_at"`
-		PlayerRole []PlayerRole       `bson:"player_roles"`
+		PlayerRole []PlayerRole       `json:"player_roles" bson:"player_roles"`
 	}
 
 	PlayerRole struct {
