@@ -7,15 +7,17 @@ import (
 	"time"
 
 	"github.com/Hayato360/go_shop/modules/player"
-	"go.mongodb.org/mongo-driver/bson/primitive"
+	"github.com/Hayato360/go_shop/pkg/utils"
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
+	"go.mongodb.org/mongo-driver/v2/mongo/options"
 )
 
 type (
 	PlayerRepositoryService interface {
 		IsUniquePlayer(pctx context.Context, email, username string) bool
-		InsertOnePlayer(pctx context.Context, req *player.Player) (primitive.ObjectID, error)
+		InsertOnePlayer(pctx context.Context, req *player.Player) (bson.ObjectID, error)
+		FindOnePlayerProfile(pctx context.Context, playerId string) (*player.PlayerProfileBson, error)
 	}
 
 	playerRepository struct {
@@ -53,7 +55,7 @@ func (r *playerRepository) IsUniquePlayer(pctx context.Context, email, username 
 	return false
 }
 
-func (r *playerRepository) InsertOnePlayer(pctx context.Context, req *player.Player) (primitive.ObjectID, error) {
+func (r *playerRepository) InsertOnePlayer(pctx context.Context, req *player.Player) (bson.ObjectID, error) {
 	ctx, cancel := context.WithTimeout(pctx, 10*time.Second)
 	defer cancel()
 
@@ -63,13 +65,37 @@ func (r *playerRepository) InsertOnePlayer(pctx context.Context, req *player.Pla
 	playerId, err := col.InsertOne(ctx, req)
 	if err != nil {
 		log.Printf("Error: InsertOnePlayer: %s", err.Error())
-		return primitive.NilObjectID, errors.New("error: failed to insert player")
+		return bson.NilObjectID, errors.New("error: failed to insert player")
 	}
 
-	// Convert bson.ObjectID (v2) to primitive.ObjectID (v1)
-	bsonID := playerId.InsertedID.(bson.ObjectID)
-	var primitiveID primitive.ObjectID
-	copy(primitiveID[:], bsonID[:])
+	return playerId.InsertedID.(bson.ObjectID), nil
+}
 
-	return primitiveID, nil
+func (r *playerRepository) FindOnePlayerProfile(pctx context.Context, playerId string) (*player.PlayerProfileBson, error) {
+	ctx, cancel := context.WithTimeout(pctx, 10*time.Second)
+	defer cancel()
+
+	db := r.playerDbConn(ctx)
+	col := db.Collection("players")
+
+	result := new(player.PlayerProfileBson)
+
+	if err := col.FindOne(
+		ctx,
+		bson.M{"_id": utils.ConvertToObjectId(playerId)},
+		options.FindOne().SetProjection(
+			bson.M{
+				"_id":        1,
+				"email":      1,
+				"username":   1,
+				"created_at": 1,
+				"updated_at": 1,
+			},
+		),
+	).Decode(result); err != nil {
+		log.Printf("error: FindOnePlayerProfile: %s", err.Error())
+		return nil, errors.New("error:player profile not found")
+	}
+
+	return result, nil
 }

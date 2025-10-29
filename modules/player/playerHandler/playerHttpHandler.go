@@ -3,6 +3,7 @@ package playerhandler
 import (
 	"context"
 	"net/http"
+	"strings"
 
 	"github.com/Hayato360/go_shop/config"
 	"github.com/Hayato360/go_shop/modules/player"
@@ -15,6 +16,7 @@ import (
 type (
 	PlayerHttpHandlerService interface{
 		CreatePlayer(c echo.Context) error
+		FindOnePlayerProfile(c echo.Context) error
 	}
 
 	playerHttpHandler struct {
@@ -46,4 +48,18 @@ func (h *playerHttpHandler) CreatePlayer(c echo.Context) error {
 
 	
 	return response.SuccessResponse(c, http.StatusCreated, res)
+}
+
+
+func (h *playerHttpHandler) FindOnePlayerProfile(c echo.Context) error {
+	ctx := context.Background()
+
+	playerId := strings.TrimPrefix(c.Param("player_id"), "player:")
+
+	res,err := h.playerUsecase.FindOnePlayerProfile(ctx, playerId)
+	if err != nil {
+		return response.ErrResponse(c, http.StatusBadRequest, err.Error())
+	}
+
+	return response.SuccessResponse(c, http.StatusFound, res)
 }

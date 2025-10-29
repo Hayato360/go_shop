@@ -12,7 +12,8 @@ import (
 
 type (
 	PlayerUsecaseService interface {
-		CreatePlayer(pctx context.Context, req *player.CreatePlayerReq) (string, error)
+		CreatePlayer(pctx context.Context, req *player.CreatePlayerReq) (*player.PlayerProfile, error)
+		FindOnePlayerProfile(pctx context.Context, playerId string) (*player.PlayerProfile, error)
 	}
 
 	playerUsecase struct {
@@ -24,14 +25,14 @@ func NewPlayerUsecase(playerRepository playerrepository.PlayerRepositoryService)
 	return &playerUsecase{playerRepository: playerRepository}
 }
 
-func (u *playerUsecase) CreatePlayer(pctx context.Context, req *player.CreatePlayerReq) (string, error) {
+func (u *playerUsecase) CreatePlayer(pctx context.Context, req *player.CreatePlayerReq) (*player.PlayerProfile, error) {
 	if !u.playerRepository.IsUniquePlayer(pctx, req.Email, req.Username) {
-		return "", errors.New("error: email or username already exist")
+		return nil, errors.New("error: email or username already exist")
 	}
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
 	if err != nil {
-		return "", errors.New("error: failed to hash password")
+		return nil, errors.New("error: failed to hash password")
 	}
 
 	playerId, err := u.playerRepository.InsertOnePlayer(pctx, &player.Player{
@@ -48,8 +49,22 @@ func (u *playerUsecase) CreatePlayer(pctx context.Context, req *player.CreatePla
 		},
 	})
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
-	return playerId.Hex(), nil
+	return u.FindOnePlayerProfile(pctx, playerId.Hex())
+}
+
+func (u *playerUsecase) FindOnePlayerProfile(pctx context.Context, playerId string) (*player.PlayerProfile, error) {
+	result, err := u.playerRepository.FindOnePlayerProfile(pctx, playerId)
+	if err != nil {
+		return nil, err
+	}
+	return &player.PlayerProfile{
+		Id:       result.Id.Hex(),
+		Email:    result.Email,
+		Username: result.Username,
+		CreateAt: result.CreatedAt,
+		UpdateAt: result.UpdatedAt,
+	}, nil
 }
