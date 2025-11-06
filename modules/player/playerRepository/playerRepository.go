@@ -19,6 +19,7 @@ type (
 		InsertOnePlayer(pctx context.Context, req *player.Player) (bson.ObjectID, error)
 		FindOnePlayerProfile(pctx context.Context, playerId string) (*player.PlayerProfileBson, error)
 		InsertOnePlayerTransaction(pctx context.Context, req *player.PlayerTransaction) error
+		GetPlayerSavingAccount(pctx context.Context, playerId string) (*player.PlayerSavingAccount, error)
 	}
 
 	playerRepository struct {
@@ -117,4 +118,54 @@ func (r *playerRepository) InsertOnePlayerTransaction(pctx context.Context, req 
 	log.Printf("Result: InsertOnePlayerTransaction: %v", result.InsertedID)
 	
 	return nil
+}
+
+func (r *playerRepository) GetPlayerSavingAccount(pctx context.Context, playerId string) (*player.PlayerSavingAccount, error) {
+	ctx, cancel := context.WithTimeout(pctx, 10*time.Second)
+	defer cancel()
+
+	db := r.playerDbConn(ctx)
+	col := db.Collection("player_transactions")
+
+	result := new(player.PlayerSavingAccount)
+
+	filter := bson.A{
+		bson.D{{Key: "$match", Value: bson.D{{Key: "player_id", Value: playerId}}}},
+		bson.D{{Key: "$group", Value: bson.D{
+			{Key: "_id", Value: "$player_id"},
+			{Key: "balance", Value: bson.D{{Key: "$sum", Value: "$amount"}}},
+		}}},
+		bson.D{{Key: "$project", Value: bson.D{
+			{Key: "player_id", Value: "$_id"},
+			{Key: "_id", Value: 0},
+			{Key: "balance", Value: 1},
+		}}},
+	}
+
+	cursors, err := col.Aggregate(ctx, filter)
+	if err != nil {
+		log.Printf("Error: GetPlayerSavingAccount: %s", err.Error())
+		return nil , errors.New("error: failed to aggregate player saving account")
+	}
+
+	for cursors.Next(ctx) {
+		if err := cursors.Decode(result); err != nil {
+			log.Printf("Error: GetPlayerSavingAccount Decode: %s", err.Error())
+			_ = cursors.Close(ctx)
+			return nil , errors.New("error: failed to decode player saving account")
+		}
+
+		// we expect a single aggregation result; close cursor and return
+		_ = cursors.Close(ctx)
+		return result, nil
+	}
+
+	// check for any errors encountered during iteration
+	if err := cursors.Err(); err != nil {
+		log.Printf("Error: GetPlayerSavingAccount Cursor: %s", err.Error())
+		return nil, errors.New("error: cursor encountered an error")
+	}
+
+	// no aggregation result found
+	return nil, errors.New("error: no player saving account found")
 }

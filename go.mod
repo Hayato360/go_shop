@@ -10,7 +10,10 @@ require (
 	google.golang.org/protobuf v1.36.6
 )
 
-require google.golang.org/genproto/googleapis/rpc v0.0.0-20250804133106-a7a43d27e69b // indirect
+require (
+	github.com/golang-jwt/jwt/v5 v5.3.0 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20250804133106-a7a43d27e69b // indirect
+)
 
 require (
 	github.com/gabriel-vasile/mimetype v1.4.10 // indirect
