@@ -1,6 +1,7 @@
 package jwtauth
 
 import (
+	"time"
 	"github.com/golang-jwt/jwt/v5"
 )
 
@@ -40,3 +41,36 @@ func (a *authConcrete) SignToken() string {
 	ss, _ := token.SignedString(a.Secret)
 	return ss
 } 
+func now() time.Time {
+	loc,_ := time.LoadLocation("Asia/Bankok")
+	return time.Now().In(loc) 
+}
+
+// t is second unit
+func jwtTimeDurationCal(t int64) *jwt.NumericDate {
+	return jwt.NewNumericDate(now().Add(time.Duration(t) * time.Second))
+}
+
+func jwtTimeRepeatAdapter(t int64) *jwt.NumericDate {
+	return jwt.NewNumericDate(time.Unix(t,0))
+}
+
+func NewAccessToken(secret string,expiredAt int64, claims *Claims) AuthFactory{
+	return &accessToken{
+		authConcrete: &authConcrete{
+			Secret: []byte(secret),
+			Claims: &AuthMapClaims{
+				Claims: claims,
+				RegisteredClaims: jwt.RegisteredClaims{
+					Issuer: "go-shop",
+					Subject: "access-token",
+					Audience: jwt.ClaimStrings{"go-shop.com"},
+					ExpiresAt: jwtTimeDurationCal(expiredAt),
+					NotBefore: jwt.NewNumericDate(now()),
+					IssuedAt: jwt.NewNumericDate(now()),
+				},
+			},
+
+		},
+	}
+}
