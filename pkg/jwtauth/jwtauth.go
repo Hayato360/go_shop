@@ -74,3 +74,43 @@ func NewAccessToken(secret string,expiredAt int64, claims *Claims) AuthFactory{
 		},
 	}
 }
+
+func NewRefreshToken(secret string,expiredAt int64, claims *Claims) AuthFactory{
+	return &accessToken{
+		authConcrete: &authConcrete{
+			Secret: []byte(secret),
+			Claims: &AuthMapClaims{
+				Claims: claims,
+				RegisteredClaims: jwt.RegisteredClaims{
+					Issuer: "go-shop",
+					Subject: "refresh-token",
+					Audience: []string{"go-shop.com"},
+					ExpiresAt: jwtTimeDurationCal(expiredAt),
+					NotBefore: jwt.NewNumericDate(now()),
+					IssuedAt: jwt.NewNumericDate(now()),
+				},
+			},
+
+		},
+	}
+}
+
+func ReloadToken(secret string, expireAt int64, claims *Claims) string {
+	obj := &refreshToken{
+		authConcrete: &authConcrete{
+			Secret: []byte(secret),
+			Claims: &AuthMapClaims{
+				Claims: claims,
+				RegisteredClaims: jwt.RegisteredClaims{
+					Issuer: "go-shop",
+					Subject: "refresh-token",
+					Audience: []string{"go-shop.com"},
+					ExpiresAt: jwtTimeRepeatAdapter(expireAt),
+					NotBefore: jwt.NewNumericDate(now()),
+					IssuedAt: jwt.NewNumericDate(now()),
+				},
+			},
+		},
+	}
+	return obj.SignToken()
+}
