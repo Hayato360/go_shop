@@ -1,19 +1,42 @@
 package jwtauth
 
+import (
+	"github.com/golang-jwt/jwt/v5"
+)
+
 type (
 	AuthFactory interface {
 		SignToken() string
 	}
 
-	authConcrete struct {
-
+	Claims struct {
+		Id string `json:"id"`
+		RoleCode int `json:"role_code"`
 	}
 
-	accessToken struct {}
+	AuthMapClaims struct {
+		*Claims
+		jwt.RegisteredClaims
+	}
 
-	refreshToken struct {}
+	authConcrete struct {
+		Secret []byte
+		Claims *AuthMapClaims `json:"claims"`
+	}
 
-	apiKey struct {}
+	accessToken struct{ *authConcrete }
 
+	refreshToken struct{ *authConcrete }
 
+	apiKey struct{ *authConcrete }
 )
+
+func NewAuthFactory (factory AuthFactory) AuthFactory{
+	return factory
+}
+
+func (a *authConcrete) SignToken() string {
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, a.Claims)
+	ss, _ := token.SignedString(a.Secret)
+	return ss
+} 
