@@ -1,11 +1,16 @@
 package jwtauth
 
 import (
+	"context"
 	"errors"
+	"sync"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
+	"google.golang.org/grpc/metadata"
 )
+
+
 
 type (
 	AuthFactory interface {
@@ -115,12 +120,12 @@ func ReloadToken(secret string, expireAt int64, claims *Claims) string {
 	return obj.SignToken()
 }
 
-func NewApiKey(secret string, expiredAt int64, claims *Claims) AuthFactory {
+func NewApiKey(secret string) AuthFactory {
 	return &apiKey{
 		authConcrete: &authConcrete{
 			Secret: []byte(secret),
 			Claims: &AuthMapClaims{
-				Claims: claims,
+				Claims: &Claims{},
 				RegisteredClaims: jwt.RegisteredClaims{
 					Issuer:    "go-shop",
 					Subject:   "api-key",
@@ -151,11 +156,26 @@ func ParseToken(secret string, tokenString string) (*AuthMapClaims, error) {
 		}
 	}
 
-	if claims, ok := token.Claims.(*AuthMapClaims): ok {
+	if claims, ok := token.Claims.(*AuthMapClaims); ok {
 		return claims, nil
 	}else {
 		return nil, errors.New("error: token is invalid")
 	}
 
 
+}
+
+
+var apiKeyInstance string
+var once sync.Once
+
+func SetApiKey(secret string) {
+	once.Do(func () {
+		apiKeyInstance = NewApiKey(secret).SignToken()
+	})
+}
+
+
+func SetApiKeyIncContext(pctx *context.Context){
+	*pctx = metadata.NewOutgoingContext(*pctx, metadata.Pairs("auth", apiKeyInstance))
 }
