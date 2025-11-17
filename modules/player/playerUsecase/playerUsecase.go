@@ -3,8 +3,11 @@ package playerusecase
 import (
 	"context"
 	"errors"
+	"log"
+	"time"
 
 	"github.com/Hayato360/go_shop/modules/player"
+	playerPb "github.com/Hayato360/go_shop/modules/player/playerPb"
 	playerrepository "github.com/Hayato360/go_shop/modules/player/playerRepository"
 	"github.com/Hayato360/go_shop/pkg/utils"
 	"golang.org/x/crypto/bcrypt"
@@ -16,7 +19,9 @@ type (
 		FindOnePlayerProfile(pctx context.Context, playerId string) (*player.PlayerProfile, error)
 		AddPlayerMoney(pctx context.Context, req *player.CreatePlayerTransactionReq) (*player.PlayerSavingAccount, error) 
 		GetPlayerSavingAccount(pctx context.Context, playerId string) (*player.PlayerSavingAccount, error)
-	}	
+		FindOnePlayerCredential(pctx context.Context, email, password string) (*playerPb.PlayerProfile, error)
+	}
+
 
 	playerUsecase struct {
 		playerRepository playerrepository.PlayerRepositoryService
@@ -86,4 +91,25 @@ func (u *playerUsecase) AddPlayerMoney(pctx context.Context, req *player.CreateP
 
 func (u *playerUsecase) GetPlayerSavingAccount(pctx context.Context, playerId string) (*player.PlayerSavingAccount, error){
 	return u.playerRepository.GetPlayerSavingAccount(pctx, playerId)
+}
+
+func (u *playerUsecase) FindOnePlayerCredential(pctx context.Context, email, password string) (*playerPb.PlayerProfile, error) {
+	result, err := u.playerRepository.FindOnePlayerCredential(pctx, email) 
+	if err != nil {
+		return nil , err
+	}
+	if err := bcrypt.CompareHashAndPassword([]byte(password), []byte(result.Password)); err != nil {
+		log.Printf("Error: FindOnePlayerCredential: %s", err.Error())
+		return nil , errors.New("error: invalid credentials")
+	}
+
+	loc, _ := time.LoadLocation("Asia/Bankok")
+
+	return &playerPb.PlayerProfile{
+		Id:       result.Id.Hex(),
+		Email:    result.Email,
+		Username: result.Username,
+		CreateAt: result.CreatedAt.In(loc).String(),
+		UpdateAt: result.UpdatedAt.In(loc).String(),
+	}, nil
 }

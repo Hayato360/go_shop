@@ -20,6 +20,7 @@ type (
 		FindOnePlayerProfile(pctx context.Context, playerId string) (*player.PlayerProfileBson, error)
 		InsertOnePlayerTransaction(pctx context.Context, req *player.PlayerTransaction) error
 		GetPlayerSavingAccount(pctx context.Context, playerId string) (*player.PlayerSavingAccount, error)
+		FindOnePlayerCredential(pctx context.Context, email string) (*player.Player, error)
 	}
 
 	playerRepository struct {
@@ -168,4 +169,21 @@ func (r *playerRepository) GetPlayerSavingAccount(pctx context.Context, playerId
 
 	// no aggregation result found
 	return nil, errors.New("error: no player saving account found")
+}
+
+func (r *playerRepository) FindOnePlayerCredential(pctx context.Context, email string) (*player.Player, error) {
+	ctx, cancel := context.WithTimeout(pctx, 10*time.Second)
+	defer cancel()
+
+	db := r.playerDbConn(ctx)
+	col := db.Collection("players")
+
+	result := new(player.Player)
+
+	if err := col.FindOne(ctx, bson.M{"email": email}).Decode(result); err != nil {
+		log.Printf("error: FindOnePlayerCredential: %s", err.Error())
+		return nil, errors.New("error: player credential (" + email + ") not found")
+	}
+
+	return result, nil
 }
